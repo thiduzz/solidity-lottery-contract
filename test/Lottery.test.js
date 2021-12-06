@@ -26,8 +26,7 @@ describe('Lottery', () => {
 
     it('owner can set default fee', async () => {
         const result = await lottery.methods.setFee(3).send({from: owner, gas: '1000000'})
-        const fee = await lottery.methods.gweiFee().call()
-        expect(fee).toEqual("3")
+        expect(await lottery.methods.gweiFee().call()).toEqual("3")
         expect(result.transactionHash).toBeTruthy()
     })
 
@@ -79,8 +78,6 @@ describe('Lottery', () => {
         expect(lotteryAfterValue).toBe(convertFromGweiToWei(initialEntryFeeGwei * 3) )
     })
 
-
-
     it('owner can randomly pick winner', async () => {
         await join(accounts[2])
         await lottery.methods.pickWinner().send({from: owner, gas: '1000000'})
@@ -97,10 +94,23 @@ describe('Lottery', () => {
             expect(e.message).toContain("This function is restricted to the contract's owner");
         }
     })
+
+
+    it('winner should get the prize', async () => {
+        const value = await join(accounts[2])
+        const initialBalance = await web3.eth.getBalance(accounts[2])
+        await lottery.methods.pickWinner().send({from: owner, gas: '1000000'})
+        const finalBalance = await web3.eth.getBalance(accounts[2])
+        //gas is not considered
+        const diff = web3.utils.toBN(finalBalance).sub(web3.utils.toBN(initialBalance))
+        expect(diff.toString()).toBe(convertFromGweiToWei(initialEntryFeeGwei))
+
+        web3.utils.toTwosComplement()
+    })
 })
 
 async function join(account) {
-    await lottery.methods.join().send({
+    return await lottery.methods.join().send({
         from: account,
         gas: '1000000',
         value: convertFromGweiToWei(initialEntryFeeGwei)
