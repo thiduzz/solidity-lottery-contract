@@ -1,0 +1,18 @@
+{
+  "name": "lottery",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "assert": "^2.0.0",
+    "ganache": "^6.4.5",
+    "ganache-core": "^2.13.2",
+    "jest": "27.3.1",
+    "solc": "^0.8.10",
+    "web3": "^1.6.1"
+  },
+  "scripts": {
+    "test": "jest",
+    "start": "yarn test"
+  }
+}
