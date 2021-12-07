@@ -1,6 +1,6 @@
 const HDWalletProvider = require('@truffle/hdwallet-provider')
 const Web3 = require('web3')
-const { abi, evm } = require('./compile')
+const compile = require('../.build/compile')
 const provider = new HDWalletProvider(
   //the 12 word phrase
   process.env.DEPLOYMENT_MNEUMONIC_PHRASE,
@@ -12,10 +12,11 @@ const web3 = new Web3(provider)
 
 const deploy = async () => {
   const accounts = await web3.eth.getAccounts()
-  const result = await new web3.eth.Contract(abi)
-    .deploy({ data: evm.bytecode.object, arguments: ['Hello Thiago!'] })
+  const { Lottery } = await compile('Lottery.sol')
+  const lottery = await new web3.eth.Contract(Lottery.abi)
+    .deploy({ data: Lottery.evm.bytecode.object })
     .send({ from: accounts[0], gas: '1000000' })
-  console.log('Contract deployed to ' + result.options.address)
+  console.log('Contract deployed to ' + lottery.options.address)
   provider.engine.stop()
 }
 
