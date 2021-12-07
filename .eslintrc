@@ -1,0 +1,105 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "@typescript-eslint/eslint-plugin",
+    "prettier"
+  ],
+  "extends": [
+    "airbnb",
+    "airbnb/hooks",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "plugin:react/recommended",
+    "plugin:jest/recommended"
+  ],
+  "settings": {
+    "react": {
+      "pragma": "React",
+      "version": "detect"
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx"
+      ]
+    },
+    "import/resolver": {
+      "node": {
+        "paths": [
+          "src"
+        ],
+        "extensions": [
+          ".ts",
+          ".tsx",
+          ".d.ts"
+        ],
+        "moduleDirectory": [
+          "node_modules"
+        ]
+      }
+    }
+  },
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "extraFileExtensions": [
+      ".json"
+    ],
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "func-names": "off",
+    "no-console": "warn",
+    "react/prop-types": "off",
+    "prettier/prettier": "error",
+    "react/jsx-one-expression-per-line": "off",
+    "react/no-unescaped-entities": "off",
+    "no-case-declarations": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": [
+          "**/*.test.ts",
+          "**/*.test.tsx",
+          "rollup.config.js",
+          "postcss.config.js"
+        ]
+      }
+    ],
+    "react/jsx-filename-extension": [
+      "warn",
+      {
+        "extensions": [
+          ".tsx"
+        ]
+      }
+    ],
+    "import/extensions": [
+      "error",
+      {
+        "json": "always"
+      }
+    ],
+    "import/prefer-default-export": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": [
+      "error"
+    ],
+    "react/function-component-definition": [
+      2,
+      {
+        "namedComponents": "arrow-function",
+        "unnamedComponents": "arrow-function"
+      }
+    ],
+    "react/react-in-jsx-scope": "off",
+    "no-restricted-syntax": "off",
+    "react/require-default-props": "off"
+  }
+}
