@@ -1,14 +1,20 @@
 import Web3 from 'web3'
 
+window.ethereum.request({ method: 'eth_requestAccounts' })
+export const web3 = new Web3(window.ethereum)
+
 export default class Web3Client {
-  private web3: Web3
+  private readonly web3: Web3
 
   constructor() {
-    window.ethereum.request({ method: 'eth_requestAccounts' })
-    this.web3 = new Web3(window.ethereum)
+    this.web3 = web3
   }
 
   async getAccounts() {
     return this.web3.eth.getAccounts()
+  }
+
+  get client(): Web3 {
+    return this.web3
   }
 }
