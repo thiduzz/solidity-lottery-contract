@@ -3,7 +3,8 @@
   "plugins": [
     "@typescript-eslint",
     "@typescript-eslint/eslint-plugin",
-    "prettier"
+    "prettier",
+    "import"
   ],
   "extends": [
     "airbnb",
@@ -26,6 +27,9 @@
       ]
     },
     "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      },
       "node": {
         "paths": [
           "src"
@@ -51,6 +55,7 @@
     }
   },
   "rules": {
+    "import/no-unresolved": "error",
     "func-names": "off",
     "no-console": "warn",
     "react/prop-types": "off",
@@ -58,6 +63,8 @@
     "react/jsx-one-expression-per-line": "off",
     "react/no-unescaped-entities": "off",
     "no-case-declarations": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "import/no-extraneous-dependencies": [
       "error",
