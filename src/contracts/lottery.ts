@@ -1,8 +1,7 @@
+import { AbiItem } from 'web3-utils'
 import { web3 } from '../clients/web3'
 
-const address = process.env.REACT_APP_LOTTERY_CONTRACT_ADDRESS
-
-const abi: Array<Record<string, unknown>> = [
+const abi = [
   {
     inputs: [],
     stateMutability: 'nonpayable',
@@ -128,5 +127,8 @@ const abi: Array<Record<string, unknown>> = [
     signature: '0x69fe0e2d',
   },
 ]
-
-export default new web3.eth.Contract(abi, address)
+// eslint-disable-next-line
+export const LotteryContract: any = new web3.eth.Contract(
+  abi as AbiItem[],
+  process.env.REACT_APP_LOTTERY_CONTRACT_ADDRESS,
+)
