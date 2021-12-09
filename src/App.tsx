@@ -12,7 +12,10 @@ const App = () => {
         <Logo />
         <Menu />
       </div>
-      <Status />
+
+      <div className="p-10 min-h-screen flex items-center justify-center bg-cool-gray-700">
+        <Status />
+      </div>
     </div>
   )
 }

@@ -31,18 +31,16 @@ export const Status = () => {
   }, [fetchOwner])
 
   return (
-    <div className="p-10 min-h-screen flex items-center justify-center bg-cool-gray-700">
-      <h1 className="text-xl font-black text-white text-center">
-        <p className="bg-gradient-to-r text-transparent bg-clip-text from-green-400 to-purple-500">
-          Manager: {lotteryState.managerAddress}
-        </p>
-        <p className="bg-gradient-to-r text-transparent bg-clip-text from-green-400 to-purple-500">
-          Joiners: {lotteryState.joiners.length}
-        </p>
-        <p className="bg-gradient-to-r text-transparent bg-clip-text from-green-400 to-purple-500">
-          Lottery Pot: {web3.utils.fromWei(lotteryState.balance, 'ether')} ether
-        </p>
-      </h1>
-    </div>
+    <h1 className="text-xl font-black text-white text-center">
+      <p className="bg-gradient-to-r text-transparent bg-clip-text from-green-400 to-purple-500">
+        Manager: {lotteryState.managerAddress}
+      </p>
+      <p className="bg-gradient-to-r text-transparent bg-clip-text from-green-400 to-purple-500">
+        Joiners: {lotteryState.joiners.length}
+      </p>
+      <p className="bg-gradient-to-r text-transparent bg-clip-text from-green-400 to-purple-500">
+        Lottery Pot: {web3.utils.fromWei(lotteryState.balance, 'ether')} ether
+      </p>
+    </h1>
   )
 }
