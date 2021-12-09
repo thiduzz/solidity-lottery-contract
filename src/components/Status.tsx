@@ -31,7 +31,7 @@ export const Status = () => {
   }, [fetchOwner])
 
   return (
-    <h1 className="text-xl font-black text-white text-center">
+    <h1 className="text-xl font-black text-white text-center my-5">
       <p className="bg-gradient-to-r text-transparent bg-clip-text from-green-400 to-purple-500">
         Manager: {lotteryState.managerAddress}
       </p>
