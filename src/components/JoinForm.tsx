@@ -1,4 +1,5 @@
 import { ChangeEvent, useCallback, useState } from 'react'
+import { useLottery } from '../context/LotteryContext'
 
 interface ITicketState {
   value: string
@@ -11,24 +12,35 @@ export const JoinForm = () => {
     inProgress: false,
   })
 
-  const join = useCallback(async () => {
-    const i = 1 + 1
-    return i
-  }, [])
+  const { join } = useLottery()
+
+  const joinHandler = useCallback(
+    async (e) => {
+      e.preventDefault()
+
+      // eslint-disable-next-line
+      //TODO: join
+      join(ticket.value)
+    },
+    [join, ticket.value],
+  )
 
   const valueChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setTicket({ value: e.target.value, inProgress: false })
   }
 
   return (
-    <div className="my-5 flex flex-row items-center justify-center">
+    <form
+      className="my-5 flex flex-row items-center justify-center"
+      onSubmit={joinHandler}
+    >
       <div className="relative mx-2">
         <input
           id="name"
           name="name"
           autoComplete="off"
           data-lpignore="true"
-          type="text"
+          type="number"
           placeholder="Value"
           onChange={valueChangeHandler}
           value={ticket.value}
@@ -42,13 +54,11 @@ export const JoinForm = () => {
         </div>
       </div>
       <button
-        onClick={join}
-        onKeyDown={join}
-        type="button"
+        type="submit"
         className="bg-red-500 px-5 py-3 text-xl shadow-sm font-medium tracking-wider  text-red-100 rounded-full hover:shadow-2xl hover:bg-red-600 mx-2"
       >
         Join
       </button>
-    </div>
+    </form>
   )
 }
