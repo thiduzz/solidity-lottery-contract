@@ -1,8 +1,24 @@
 .flash-message{
-  @apply absolute max-w-2xl w-full h-10 rounded-xl flex items-center justify-center top-16 right-8;
+  @apply absolute max-w-2xl w-full h-auto py-2 rounded-xl top-16 right-8 px-4 shadow-lg z-10 transition-opacity duration-700;
+  .flash-message-container{
+    @apply flex items-center justify-between;
+
+    .close-btn-container{
+      @apply h-full flex items-center justify-center;
+      &:hover{
+        @apply scale-150;
+      }
+    }
+
+
+    span{
+      @apply text-sm
+    }
+
+  }
 
   &.success{
-    @apply bg-green-600;
+    @apply bg-green-600 text-white;
   }
 
   &.error{
