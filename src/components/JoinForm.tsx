@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback, useState } from 'react'
-import { useLottery } from '../context/LotteryContext'
+import { useFlashMessage } from '../context/FlashMessageContext'
 
 interface ITicketState {
   value: string
@@ -12,17 +12,15 @@ export const JoinForm = () => {
     inProgress: false,
   })
 
-  const { join } = useLottery()
+  const { showSuccess } = useFlashMessage()
 
   const joinHandler = useCallback(
     async (e) => {
       e.preventDefault()
 
-      // eslint-disable-next-line
-      //TODO: join
-      join(ticket.value)
+      showSuccess('Success Title')
     },
-    [join, ticket.value],
+    [showSuccess],
   )
 
   const valueChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
