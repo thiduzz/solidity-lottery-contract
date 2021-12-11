@@ -38,11 +38,6 @@ export const LotteryProvider = ({
     return <Loading />
   }
 
-  if (error) {
-    // eslint-disable-next-line
-    console.log(error)
-    return <div>Whoops! 😟</div>
-  }
   return (
     <LotteryContext.Provider value={state}>{children}</LotteryContext.Provider>
   )
