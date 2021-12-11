@@ -1,0 +1,11 @@
+.flash-message{
+  @apply absolute max-w-2xl w-full h-10 rounded-xl flex items-center justify-center top-16 right-8;
+
+  &.success{
+    @apply bg-green-600;
+  }
+
+  &.error{
+    @apply bg-red-400 text-white;
+  }
+}
