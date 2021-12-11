@@ -18,7 +18,10 @@ export const JoinForm = () => {
     async (e) => {
       e.preventDefault()
 
-      showSuccess('Success Title')
+      showSuccess(
+        'Success Title',
+        'Message text with a reason of why something happened',
+      )
     },
     [showSuccess],
   )
