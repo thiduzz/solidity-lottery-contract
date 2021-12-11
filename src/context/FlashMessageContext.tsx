@@ -12,6 +12,7 @@ interface IFlashMessage {
   title: string
   message: string
   type: string
+  timerInSeconds?: number
 }
 
 interface IFlashMessageContextState {
@@ -49,6 +50,7 @@ export const FlashMessageProvider = ({
         message: error instanceof Error ? error.message : error,
         type: 'error',
         title: 'Whoops!',
+        timerInSeconds: 5,
         closeable: true,
       })
     },
@@ -58,8 +60,9 @@ export const FlashMessageProvider = ({
     (title: string, message?: string) => {
       show({
         message: message ?? '',
-        type: 'error',
+        type: 'success',
         title,
+        timerInSeconds: 5,
         closeable: true,
       })
     },
