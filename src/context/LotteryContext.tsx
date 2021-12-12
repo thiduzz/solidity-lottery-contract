@@ -1,5 +1,5 @@
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
-import { Loading } from '../components/Loading'
+import { Loading, LoadingSizes, LoadingTypes } from '../components/Loading'
 import useLotteryContract from '../hooks/useLotteryContract'
 
 const throwMissingProvider: (value: string) => void = () => {
@@ -35,7 +35,9 @@ export const LotteryProvider = ({
   )
 
   if (inProgress) {
-    return <Loading />
+    return (
+      <Loading size={LoadingSizes.FULLSCREEN} type={LoadingTypes.GRADIENT} />
+    )
   }
 
   return (
