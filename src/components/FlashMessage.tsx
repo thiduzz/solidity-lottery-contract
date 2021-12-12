@@ -24,7 +24,6 @@ const FlashMessage = () => {
 
   const messageType = current?.type ?? ''
   const shouldShow = visible && current !== null
-  console.log(shouldShow)
   return (
     <TransitionGroup>
       {shouldShow && (
