@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { IoCloseCircle } from 'react-icons/io5'
 import { TransitionGroup, Transition } from 'react-transition-group'
-import { useFlashMessage } from '../context/FlashMessageContext'
+import { useFlashMessage } from '../../context/FlashMessageContext'
 import './FlashMessage.scss'
 
 const FlashMessage = () => {
