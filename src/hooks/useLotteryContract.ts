@@ -1,18 +1,15 @@
 import { useCallback, useEffect, useState } from 'react'
 import { LotteryContract } from '../contracts/lottery'
-import { web3 } from '../clients/web3'
 
-interface ILotteryState {
+export interface ILotteryState {
   managerAddress: string
   joiners: Array<string>
-  balance: string
 }
 
 const useLotteryContract = () => {
   const [lotteryState, setLotteryState] = useState<ILotteryState>({
     managerAddress: '',
     joiners: [],
-    balance: '',
   })
   const [error, setError] = useState<Error | null>(null)
   const [inProgress, setInProgress] = useState(true)
@@ -20,12 +17,13 @@ const useLotteryContract = () => {
   const fetch = useCallback(async () => {
     try {
       const joiners = await LotteryContract.methods.getJoiners().call()
-      const balance = await web3.eth.getBalance(LotteryContract.options.address)
-      const managerAddress = await LotteryContract.methods.manager().call()
+
+      const managerAddress: Lowercase<string> = await LotteryContract.methods
+        .manager()
+        .call()
       setLotteryState({
         managerAddress,
         joiners,
-        balance,
       })
     } catch (e) {
       setError(e as Error)
@@ -35,12 +33,11 @@ const useLotteryContract = () => {
   }, [])
 
   const join = useCallback(
-    async (value) => {
+    async (address: string, value: string) => {
       try {
-        const accounts = await web3.eth.getAccounts()
         await LotteryContract.methods.join().send({
-          from: accounts[0],
-          value: web3.utils.toWei(value, 'ether'),
+          from: address,
+          value,
         })
         setInProgress(false)
         setError(null)
@@ -63,6 +60,7 @@ const useLotteryContract = () => {
     error,
     lottery: lotteryState,
     join,
+    fetch,
   }
 }
 

@@ -1,37 +1,43 @@
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
-import { Loading, LoadingSizes, LoadingTypes } from '../components/Loading'
-import useLotteryContract from '../hooks/useLotteryContract'
+import { Loading, LoadingSizes, LoadingTypes } from '../components/ui/Loading'
+import useLotteryContract, { ILotteryState } from '../hooks/useLotteryContract'
 
 const throwMissingProvider: (value: string) => void = () => {
   throw new Error('The LotteryContext is missing!')
 }
 
 interface ILotteryContext {
-  managerAddress: string
-  joiners: Array<string>
-  balance: string
+  lottery: ILotteryState
   inProgress: boolean
   error: Error | null
-  join: (value: string) => void
+  join: (address: string, value: string) => void
+  fetch: () => void
 }
 
 export const LotteryContext = createContext<ILotteryContext>({
-  managerAddress: '',
-  joiners: [],
-  balance: '',
   inProgress: true,
   error: null,
   join: throwMissingProvider,
+  fetch: () => {
+    throw new Error('The LotteryContext is missing!')
+  },
+  lottery: { managerAddress: '', joiners: [] },
 })
 
 export const LotteryProvider = ({
   children,
 }: PropsWithChildren<Record<never, never>>) => {
-  const { inProgress, error, lottery, join } = useLotteryContract()
+  const { inProgress, error, join, fetch, lottery } = useLotteryContract()
 
   const state = useMemo(
-    () => ({ inProgress, error, join, ...lottery }),
-    [inProgress, error, lottery, join],
+    () => ({
+      inProgress,
+      error,
+      join,
+      fetch,
+      lottery,
+    }),
+    [inProgress, error, join, fetch, lottery],
   )
 
   if (inProgress) {

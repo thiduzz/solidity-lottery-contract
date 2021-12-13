@@ -3,13 +3,13 @@ import { useFlashMessage } from '../context/FlashMessageContext'
 import { useLottery } from '../context/LotteryContext'
 import { Loading, LoadingSizes, LoadingTypes } from './ui/Loading'
 
-export const JoinForm = () => {
-  const [ticketValue, setTicketValue] = useState<string>('')
+export const SetPriceForm = () => {
+  const [price, setPrice] = useState<string>('')
 
   const { inProgress } = useLottery()
   const { showSuccess } = useFlashMessage()
 
-  const joinHandler = useCallback(
+  const priceHandler = useCallback(
     async (e) => {
       e.preventDefault()
 
@@ -21,14 +21,14 @@ export const JoinForm = () => {
     [showSuccess],
   )
 
-  const ticketValueChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setTicketValue(e.target.value)
+  const priceValueChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    setPrice(e.target.value)
   }
 
   return (
     <form
       className="my-5 flex flex-row items-center justify-center"
-      onSubmit={joinHandler}
+      onSubmit={priceHandler}
     >
       <div className="relative mx-2">
         <input
@@ -37,15 +37,15 @@ export const JoinForm = () => {
           autoComplete="off"
           data-lpignore="true"
           type="number"
-          placeholder="Value"
-          onChange={ticketValueChangeHandler}
-          value={ticketValue}
+          placeholder="Price"
+          onChange={priceValueChangeHandler}
+          value={price}
           className="text-sm sm:text-base relative w-full border rounded placeholder-gray-400 focus:border-indigo-400 focus:outline-none py-2 pl-2 pr-18 border-red-500"
         />
 
         <div className="absolute flex border border-transparent right-0 top-0 h-full w-16">
           <div className="flex items-center justify-center rounded-tl rounded-bl z-10 bg-gray-100 text-gray-600 text-lg h-full w-full">
-            ether
+            wei
           </div>
         </div>
       </div>
@@ -60,10 +60,10 @@ export const JoinForm = () => {
               type={LoadingTypes.PLAIN}
               size={LoadingSizes.SMALL}
             />
-            <span className="flex-grow">Joining ...</span>
+            <span className="flex-grow">Updating ...</span>
           </div>
         )}
-        {!inProgress && 'Join'}
+        {!inProgress && 'Update'}
       </button>
     </form>
   )

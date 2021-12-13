@@ -1,32 +1,34 @@
 import './App.scss'
-import { Status } from './components/Status'
-import Logo from './components/Logo'
-import Menu from './components/Menu'
-import { JoinForm } from './components/JoinForm'
+import Logo from './components/ui/Logo'
+import Menu from './components/ui/Menu'
 import { LotteryProvider } from './context/LotteryContext'
-import FlashMessage from './components/FlashMessage'
+import FlashMessage from './components/ui/FlashMessage'
 import { FlashMessageProvider } from './context/FlashMessageContext'
+import useWeb3 from './hooks/useWeb3'
+import { AppProvider } from './context/AppContext'
+import ViewContainer from './components/ViewContainer'
 
 const App = () => {
   const topbarClasses = 'top-bar'
 
+  const { currentUser } = useWeb3()
+  // eslint-disable-next-line
+  console.log(currentUser)
   return (
-    <FlashMessageProvider>
-      <div className="App">
-        <LotteryProvider>
-          <div className={topbarClasses}>
-            <Logo />
-            <Menu />
-          </div>
-
-          <div className="p-10 min-h-screen flex items-center justify-center bg-cool-gray-700 flex-col">
-            <Status />
-            <JoinForm />
-          </div>
-        </LotteryProvider>
-      </div>
-      <FlashMessage />
-    </FlashMessageProvider>
+    <AppProvider>
+      <FlashMessageProvider>
+        <div className="App">
+          <LotteryProvider>
+            <div className={topbarClasses}>
+              <Logo />
+              <Menu />
+            </div>
+            <ViewContainer />
+          </LotteryProvider>
+        </div>
+        <FlashMessage />
+      </FlashMessageProvider>
+    </AppProvider>
   )
 }
 
