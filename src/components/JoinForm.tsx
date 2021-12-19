@@ -3,10 +3,17 @@ import { useFlashMessage } from '../context/FlashMessageContext'
 import { Loading, LoadingSizes, LoadingTypes } from './ui/Loading'
 import { useLottery } from '../context/LotteryContext'
 import { useApp } from '../context/AppContext'
+import useWeb3 from '../hooks/useWeb3'
+import { LotteryContract } from '../contracts/lottery'
 
 export const JoinForm = () => {
   const [ticketValue, setTicketValue] = useState<string>('')
   const [inProgress, setInProgress] = useState<boolean>(false)
+
+  const {
+    client,
+    actions: { retrieveBalance },
+  } = useWeb3()
 
   const { showSuccess, showError } = useFlashMessage()
   const { actions } = useLottery()
@@ -17,7 +24,11 @@ export const JoinForm = () => {
       e.preventDefault()
       try {
         setInProgress(true)
-        actions.join(currentUser.address, ticketValue)
+        actions.join(
+          currentUser.address,
+          client.convertFromEthToWei(ticketValue),
+        )
+        await retrieveBalance(LotteryContract.options.address)
         showSuccess('Yeah!', 'Thanks for joining! Good luck!')
       } catch (error) {
         showError(error as Error)
@@ -25,7 +36,15 @@ export const JoinForm = () => {
         setInProgress(false)
       }
     },
-    [showSuccess, showError, actions, currentUser.address, ticketValue],
+    [
+      showSuccess,
+      showError,
+      actions,
+      currentUser.address,
+      ticketValue,
+      client,
+      retrieveBalance,
+    ],
   )
 
   const ticketValueChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {

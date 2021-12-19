@@ -70,10 +70,9 @@ export const setError = (error: Error | null) => ({
 })
 
 export const setPrice = async (address: string, value: string) => {
-  await LotteryContract.methods.setFee().send({
-    from: address,
-    value,
-  })
+  await LotteryContract.methods
+    .setFee(value)
+    .send({ from: address, gas: '1000000' })
   return {
     type: LotteryActionKind.SET_PRICE,
     payload: { fee: value },
@@ -83,6 +82,7 @@ export const setPrice = async (address: string, value: string) => {
 export const pickWinner = async (address: string) => {
   const winner = await LotteryContract.methods.pickWinner().send({
     from: address,
+    gas: '1000000',
   })
   return {
     type: LotteryActionKind.PICK_WINNER,
@@ -108,8 +108,10 @@ export const fetch = async () => {
 export const join = async (address: string, value: string) => {
   await LotteryContract.methods.join().send({
     from: address,
+    gas: '1000000',
     value,
   })
+
   return {
     type: LotteryActionKind.JOIN,
     payload: { address },
@@ -130,7 +132,7 @@ const lotteryReducer = (state: ILotteryState, action: LotteryAction) => {
     case LotteryActionKind.JOIN:
       return {
         ...state,
-        joiners: [payload.address, ...payload.joiners],
+        joiners: [payload.address, ...state.joiners],
       }
     case LotteryActionKind.SET_ERROR:
       return {

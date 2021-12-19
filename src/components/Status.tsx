@@ -2,10 +2,10 @@ import useWeb3 from '../hooks/useWeb3'
 import { useLottery } from '../context/LotteryContext'
 
 export const Status = () => {
-  const { state } = useLottery()
-  const { balance, inProgressBalance } = useWeb3()
+  const { state, stateWeb3 } = useLottery()
+  const { client } = useWeb3()
 
-  if (inProgressBalance || state.inProgress.fetch) {
+  if (stateWeb3.inProgressBalance || state.inProgress.fetch) {
     return <div>Loading...</div>
   }
   return (
@@ -17,7 +17,10 @@ export const Status = () => {
         Joiners: {state.joiners.length}
       </p>
       <p className="bg-gradient-to-r text-transparent bg-clip-text from-green-400 to-purple-500">
-        Lottery Pot: {balance} ether
+        Lottery Fee: {client.convertFromGweiToEth(state.fee.toString())} eth
+      </p>
+      <p className="bg-gradient-to-r text-transparent bg-clip-text from-green-400 to-purple-500">
+        Lottery Pot: {stateWeb3.balance} ether
       </p>
     </h1>
   )

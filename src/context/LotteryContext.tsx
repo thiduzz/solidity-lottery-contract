@@ -36,14 +36,15 @@ export const LotteryProvider = ({
   )
   const { lottery, lotteryDispatch, actions } = useLotteryContract()
 
-  const state = useMemo(() => {
-    return {
+  const state = useMemo(
+    () => ({
       state: lottery,
       stateWeb3: { balance, inProgressBalance },
       dispatch: lotteryDispatch,
       actions,
-    }
-  }, [lotteryDispatch, lottery, actions, balance, inProgressBalance])
+    }),
+    [lotteryDispatch, lottery, actions, balance, inProgressBalance],
+  )
 
   return (
     <LotteryContext.Provider value={state}>{children}</LotteryContext.Provider>

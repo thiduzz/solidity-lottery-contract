@@ -8,6 +8,7 @@ export interface IWeb3Client {
   getContractBalance(address: string): Promise<string>
   convertFromEthToWei(value: string): string
   convertFromWeiToEth(value: string): string
+  convertFromGweiToEth(value: string): string
   get client(): Web3
 }
 
@@ -32,6 +33,13 @@ export default class Web3Client implements IWeb3Client {
 
   convertFromWeiToEth(value: string): string {
     return this.client.utils.fromWei(value, 'ether')
+  }
+
+  convertFromGweiToEth(value: string): string {
+    return this.client.utils.fromWei(
+      this.client.utils.toWei(value, 'gwei'),
+      'ether',
+    )
   }
 
   get client(): Web3 {
