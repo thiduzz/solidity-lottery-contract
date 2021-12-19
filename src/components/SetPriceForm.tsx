@@ -1,24 +1,31 @@
 import { ChangeEvent, useCallback, useState } from 'react'
-import { useFlashMessage } from '../context/FlashMessageContext'
-import { useLottery } from '../context/LotteryContext'
 import { Loading, LoadingSizes, LoadingTypes } from './ui/Loading'
+import { useLottery } from '../context/LotteryContext'
+import { useApp } from '../context/AppContext'
+import { useFlashMessage } from '../context/FlashMessageContext'
 
 export const SetPriceForm = () => {
+  const { actions } = useLottery()
   const [price, setPrice] = useState<string>('')
-
-  const { inProgress } = useLottery()
-  const { showSuccess } = useFlashMessage()
+  const [inProgress, setInProgress] = useState<boolean>(false)
+  const { showSuccess, showError } = useFlashMessage()
+  const { currentUser } = useApp()
 
   const priceHandler = useCallback(
     async (e) => {
       e.preventDefault()
-
-      showSuccess(
-        'Success Title',
-        'Message text with a reason of why something happened',
-      )
+      try {
+        setInProgress(true)
+        await actions.setPrice(currentUser.address, price)
+        showSuccess('Yeah!', 'Price Updated!')
+      } catch (error) {
+        showError(error as Error)
+      } finally {
+        setInProgress(false)
+        await actions.fetch()
+      }
     },
-    [showSuccess],
+    [showSuccess, showError, actions, currentUser.address, price],
   )
 
   const priceValueChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {

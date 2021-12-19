@@ -1,50 +1,49 @@
-import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
-import { Loading, LoadingSizes, LoadingTypes } from '../components/ui/Loading'
-import useLotteryContract, { ILotteryState } from '../hooks/useLotteryContract'
-
-const throwMissingProvider: (value: string) => void = () => {
-  throw new Error('The LotteryContext is missing!')
-}
+import {
+  createContext,
+  Dispatch,
+  PropsWithChildren,
+  useContext,
+  useMemo,
+} from 'react'
+import useLotteryContract from '../hooks/useLotteryContract'
+import {
+  ILotteryState,
+  InitialLotteryState,
+  LotteryAction,
+} from '../reducers/lottery'
+import useWeb3, { ILotteryStateWeb3 } from '../hooks/useWeb3'
+import { LotteryContract } from '../contracts/lottery'
 
 interface ILotteryContext {
-  lottery: ILotteryState
-  inProgress: boolean
-  error: Error | null
-  join: (address: string, value: string) => void
-  fetch: () => void
+  state: ILotteryState
+  stateWeb3: ILotteryStateWeb3
+  dispatch: Dispatch<LotteryAction>
+  actions: any
 }
 
 export const LotteryContext = createContext<ILotteryContext>({
-  inProgress: true,
-  error: null,
-  join: throwMissingProvider,
-  fetch: () => {
-    throw new Error('The LotteryContext is missing!')
-  },
-  lottery: { managerAddress: '', joiners: [] },
+  state: { ...InitialLotteryState },
+  stateWeb3: { balance: '', inProgressBalance: false },
+  dispatch: () => {},
+  actions: {},
 })
 
 export const LotteryProvider = ({
   children,
 }: PropsWithChildren<Record<never, never>>) => {
-  const { inProgress, error, join, fetch, lottery } = useLotteryContract()
-
-  const state = useMemo(
-    () => ({
-      inProgress,
-      error,
-      join,
-      fetch,
-      lottery,
-    }),
-    [inProgress, error, join, fetch, lottery],
+  const { balance, inProgressBalance } = useWeb3(
+    LotteryContract.options.address,
   )
+  const { lottery, lotteryDispatch, actions } = useLotteryContract()
 
-  if (inProgress) {
-    return (
-      <Loading size={LoadingSizes.FULLSCREEN} type={LoadingTypes.GRADIENT} />
-    )
-  }
+  const state = useMemo(() => {
+    return {
+      state: lottery,
+      stateWeb3: { balance, inProgressBalance },
+      dispatch: lotteryDispatch,
+      actions,
+    }
+  }, [lotteryDispatch, lottery, actions, balance, inProgressBalance])
 
   return (
     <LotteryContext.Provider value={state}>{children}</LotteryContext.Provider>

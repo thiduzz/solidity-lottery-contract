@@ -1,24 +1,31 @@
 import { ChangeEvent, useCallback, useState } from 'react'
 import { useFlashMessage } from '../context/FlashMessageContext'
-import { useLottery } from '../context/LotteryContext'
 import { Loading, LoadingSizes, LoadingTypes } from './ui/Loading'
+import { useLottery } from '../context/LotteryContext'
+import { useApp } from '../context/AppContext'
 
 export const JoinForm = () => {
   const [ticketValue, setTicketValue] = useState<string>('')
+  const [inProgress, setInProgress] = useState<boolean>(false)
 
-  const { inProgress } = useLottery()
-  const { showSuccess } = useFlashMessage()
+  const { showSuccess, showError } = useFlashMessage()
+  const { actions } = useLottery()
+  const { currentUser } = useApp()
 
   const joinHandler = useCallback(
     async (e) => {
       e.preventDefault()
-
-      showSuccess(
-        'Success Title',
-        'Message text with a reason of why something happened',
-      )
+      try {
+        setInProgress(true)
+        actions.join(currentUser.address, ticketValue)
+        showSuccess('Yeah!', 'Thanks for joining! Good luck!')
+      } catch (error) {
+        showError(error as Error)
+      } finally {
+        setInProgress(false)
+      }
     },
-    [showSuccess],
+    [showSuccess, showError, actions, currentUser.address, ticketValue],
   )
 
   const ticketValueChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {

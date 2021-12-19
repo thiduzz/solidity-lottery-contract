@@ -1,66 +1,41 @@
-import { useCallback, useEffect, useState } from 'react'
-import { LotteryContract } from '../contracts/lottery'
-
-export interface ILotteryState {
-  managerAddress: string
-  joiners: Array<string>
-}
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import lotteryReducer, {
+  ILotteryState,
+  InitialLotteryState,
+} from '../reducers/lottery'
+import { actions, IActions } from '../reducers/lottery.action'
 
 const useLotteryContract = () => {
-  const [lotteryState, setLotteryState] = useState<ILotteryState>({
-    managerAddress: '',
-    joiners: [],
-  })
-  const [error, setError] = useState<Error | null>(null)
-  const [inProgress, setInProgress] = useState(true)
-
-  const fetch = useCallback(async () => {
-    try {
-      const joiners = await LotteryContract.methods.getJoiners().call()
-
-      const managerAddress: Lowercase<string> = await LotteryContract.methods
-        .manager()
-        .call()
-      setLotteryState({
-        managerAddress,
-        joiners,
-      })
-    } catch (e) {
-      setError(e as Error)
-    } finally {
-      setInProgress(false)
-    }
-  }, [])
-
-  const join = useCallback(
-    async (address: string, value: string) => {
-      try {
-        await LotteryContract.methods.join().send({
-          from: address,
-          value,
-        })
-        setInProgress(false)
-        setError(null)
-        fetch()
-      } catch (e) {
-        setError(e as Error)
-      } finally {
-        setInProgress(false)
-      }
-    },
-    [fetch],
+  const state = useRef<ILotteryState>()
+  const [lotteryState, lotteryDispatch] = useReducer(
+    lotteryReducer,
+    InitialLotteryState,
   )
 
   useEffect(() => {
-    fetch()
-  }, [fetch])
+    state.current = lotteryState
+  }, [lotteryState])
+
+  const initialActions = useMemo(() => {
+    const funcs = <IActions>{}
+    Object.keys(actions).forEach((key) => {
+      funcs[key] = (...args: any) => {
+        actions[key](...args)(lotteryDispatch, state.current)
+      }
+    })
+    return funcs
+  }, [])
+
+  const [enhancedActions] = useState<IActions>(initialActions)
+
+  useEffect(() => {
+    enhancedActions.fetch()
+  }, [enhancedActions])
 
   return {
-    inProgress,
-    error,
     lottery: lotteryState,
-    join,
-    fetch,
+    lotteryDispatch,
+    actions: enhancedActions,
   }
 }
 

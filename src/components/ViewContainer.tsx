@@ -8,7 +8,7 @@ import { useLottery } from '../context/LotteryContext'
 const ViewContainer = () => {
   const { currentUser } = useApp()
   const {
-    lottery: { managerAddress },
+    state: { managerAddress },
   } = useLottery()
   const currentUserIsManager = useMemo(() => {
     if (currentUser.address === '' || managerAddress === '') {
