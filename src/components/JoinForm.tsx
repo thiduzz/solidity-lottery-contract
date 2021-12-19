@@ -1,35 +1,40 @@
 import { ChangeEvent, useCallback, useState } from 'react'
+import { TransactionReceipt } from 'web3-core'
 import { useFlashMessage } from '../context/FlashMessageContext'
 import { Loading, LoadingSizes, LoadingTypes } from './ui/Loading'
 import { useLottery } from '../context/LotteryContext'
-import { useApp } from '../context/AppContext'
-import useWeb3 from '../hooks/useWeb3'
+import { LotteryContract } from '../contracts/lottery'
 
 export const JoinForm = () => {
   const [ticketValue, setTicketValue] = useState<string>('')
   const [inProgress, setInProgress] = useState<boolean>(false)
-
-  const {
-    client,
-    actions: { retrieveBalance },
-  } = useWeb3()
-
   const { showSuccess, showError } = useFlashMessage()
-  const { actions } = useLottery()
-  const { currentUser } = useApp()
+  const {
+    lottery: {
+      state: { fee },
+      actions: lotteryActions,
+    },
+    web3: {
+      state: { client, user },
+      actions: web3Actions,
+    },
+  } = useLottery()
 
   const joinHandler = useCallback(
     async (e) => {
       e.preventDefault()
       try {
         setInProgress(true)
-        actions.join(
-          currentUser.address,
+        debugger // eslint-disable-line
+        const receipt = (await lotteryActions.join(
+          user.address,
           client.convertFromEthToWei(ticketValue),
+        )) as TransactionReceipt
+        showSuccess(
+          'Yeah!',
+          `Thanks for joining! Here is your receipt: ${receipt.transactionHash}`,
         )
-        //TODO: perform fetch status and retrieveBalance after hook
-        //await retrieveBalance(LotteryContract.options.address)
-        showSuccess('Yeah!', 'Thanks for joining! Good luck!')
+        await web3Actions.fetchBalance(LotteryContract.options.address)
       } catch (error) {
         showError(error as Error)
       } finally {
@@ -39,11 +44,11 @@ export const JoinForm = () => {
     [
       showSuccess,
       showError,
-      actions,
-      currentUser.address,
+      lotteryActions,
+      user.address,
       ticketValue,
       client,
-      retrieveBalance,
+      web3Actions,
     ],
   )
 
@@ -58,12 +63,13 @@ export const JoinForm = () => {
     >
       <div className="relative mx-2">
         <input
-          id="name"
-          name="name"
+          id="fee"
+          name="fee"
           autoComplete="off"
           data-lpignore="true"
           type="number"
           placeholder="Value"
+          min={client.convertFromGweiToEth(fee.toString())}
           onChange={ticketValueChangeHandler}
           value={ticketValue}
           className="text-sm sm:text-base relative w-full border rounded placeholder-gray-400 focus:border-indigo-400 focus:outline-none py-2 pl-2 pr-18 border-red-500"

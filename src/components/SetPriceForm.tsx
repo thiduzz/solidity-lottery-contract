@@ -1,22 +1,25 @@
 import { ChangeEvent, useCallback, useState } from 'react'
 import { Loading, LoadingSizes, LoadingTypes } from './ui/Loading'
 import { useLottery } from '../context/LotteryContext'
-import { useApp } from '../context/AppContext'
 import { useFlashMessage } from '../context/FlashMessageContext'
 
 export const SetPriceForm = () => {
-  const { actions } = useLottery()
+  const {
+    lottery: { actions },
+    web3: {
+      state: { user },
+    },
+  } = useLottery()
   const [price, setPrice] = useState<string>('')
   const [inProgress, setInProgress] = useState<boolean>(false)
   const { showSuccess, showError } = useFlashMessage()
-  const { currentUser } = useApp()
 
   const priceHandler = useCallback(
     async (e) => {
       e.preventDefault()
       try {
         setInProgress(true)
-        await actions.setPrice(currentUser.address, price)
+        await actions.setPrice(user.address, price)
         showSuccess('Yeah!', 'Price Updated!')
       } catch (error) {
         showError(error as Error)
@@ -25,7 +28,7 @@ export const SetPriceForm = () => {
         await actions.fetch()
       }
     },
-    [showSuccess, showError, actions, currentUser.address, price],
+    [showSuccess, showError, actions, user.address, price],
   )
 
   const priceValueChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {

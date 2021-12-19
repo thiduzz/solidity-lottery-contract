@@ -1,83 +1,73 @@
-import { useCallback, useEffect, useState } from 'react'
-import Web3Client, { IWeb3Client } from '../clients/web3'
-import { IUser } from '../types/user'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 
-export interface ILotteryStateWeb3 {
-  balance: string
-  inProgressBalance: boolean
-}
+import web3Reducer, { InitialWeb3State, IWeb3State } from '../reducers/web3'
+import { actions, IActions } from '../reducers/web3.action'
 
-const useWeb3 = (initialContractAddress?: string) => {
-  const [currentUser, setCurrentUser] = useState<IUser>({
-    address: '',
-  })
-  const [error, setError] = useState<Error | null>(null)
-  const [inProgress, setInProgress] = useState(true)
-  const [balance, setBalance] = useState<string>('')
-  const [inProgressBalance, setInProgressBalance] = useState(false)
-  const [client] = useState<IWeb3Client>(new Web3Client())
-
-  const retrieveUser = useCallback(async () => {
-    try {
-      const accounts = await client.getCurrentUserAccounts()
-      if (accounts !== undefined && accounts.length > 0) {
-        setCurrentUser({
-          address: accounts[0],
-        })
-      }
-    } catch (e) {
-      setError(e as Error)
-    } finally {
-      setInProgress(false)
-    }
-  }, [client])
-
-  const retrieveBalance = useCallback(
-    async (contractAddress: string) => {
-      setInProgressBalance(true)
-      await setBalance(
-        client.convertFromWeiToEth(
-          await client.getContractBalance(contractAddress),
-        ),
-      )
-      setInProgressBalance(false)
-    },
-    [client],
+const useWeb3 = (initialContractAddress?: string | undefined) => {
+  const memoContractAddress = useMemo<string | undefined>(
+    () => initialContractAddress,
+    [initialContractAddress],
   )
 
-  const onAccountChange = useCallback((accounts: Array<string>) => {
-    if (accounts.length > 0) {
-      setCurrentUser({
-        address: accounts[0],
-      })
-    } else {
-      setCurrentUser({ address: '' })
-    }
+  const state = useRef<IWeb3State>()
+  const [web3State, web3Dispatch] = useReducer(web3Reducer, InitialWeb3State)
+
+  useEffect(() => {
+    state.current = web3State
+    return () => {}
+  }, [web3State])
+
+  const initialActions = useMemo(() => {
+    const funcs = <IActions>{}
+    Object.keys(actions).forEach((key) => {
+      funcs[key] = async (...args: any) =>
+        actions[key](...args)(web3Dispatch, state.current)
+    })
+    return funcs
   }, [])
 
+  const [enhancedActions] = useState<IActions>(initialActions)
+
+  const onAccountChange = useCallback(
+    (accounts: Array<string>) => {
+      if (accounts.length > 0) {
+        enhancedActions.setUser(accounts[0])
+      } else {
+        enhancedActions.setUser(undefined)
+      }
+    },
+    [enhancedActions],
+  )
+
   useEffect(() => {
-    window.ethereum.on('connect', retrieveUser)
+    window.ethereum.on('connect', () => enhancedActions.fetchUser())
     window.ethereum.on('disconnect', () => {
-      setCurrentUser({ address: '' })
+      enhancedActions.setUser(undefined)
     })
     window.ethereum.on('accountsChanged', onAccountChange)
-  }, [onAccountChange, retrieveUser])
+
+    return () => {}
+  }, [onAccountChange, enhancedActions])
 
   useEffect(() => {
-    retrieveUser()
-    if (initialContractAddress) {
-      retrieveBalance(initialContractAddress)
+    enhancedActions.fetchUser()
+    if (memoContractAddress) {
+      enhancedActions.fetchBalance(memoContractAddress)
     }
-  }, [retrieveUser, retrieveBalance, initialContractAddress])
+    return () => {}
+  }, [enhancedActions, memoContractAddress])
 
   return {
-    client,
-    inProgress,
-    error,
-    currentUser,
-    balance,
-    inProgressBalance,
-    actions: { retrieveUser, retrieveBalance },
+    web3: web3State,
+    web3Dispatch,
+    actions: enhancedActions,
   }
 }
 

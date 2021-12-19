@@ -43,13 +43,22 @@ export const actions: IEnhancedActions = {
     (address: string, value: string) =>
     async (dispatch: Dispatch<LotteryAction>) => {
       try {
+        debugger // eslint-disable-line
         dispatch(setInProgress('join', false))
         dispatch(setError(null))
-        dispatch(await join(address, value))
+        return await join(address, value)
+          .then((actionResult: LotteryAction) => {
+            debugger // eslint-disable-line
+            dispatch(actionResult)
+            dispatch(setInProgress('join', false))
+            return actionResult.receipt
+          })
+          .catch((e) => {
+            throw e
+          })
       } catch (e) {
         dispatch(setError(e as Error))
-      } finally {
-        dispatch(setInProgress('join', false))
+        throw e
       }
     },
   setPrice:

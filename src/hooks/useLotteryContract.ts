@@ -14,14 +14,14 @@ const useLotteryContract = () => {
 
   useEffect(() => {
     state.current = lotteryState
+    return () => {}
   }, [lotteryState])
 
   const initialActions = useMemo(() => {
     const funcs = <IActions>{}
     Object.keys(actions).forEach((key) => {
-      funcs[key] = (...args: any) => {
+      funcs[key] = async (...args: any) =>
         actions[key](...args)(lotteryDispatch, state.current)
-      }
     })
     return funcs
   }, [])

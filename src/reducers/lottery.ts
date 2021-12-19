@@ -1,3 +1,4 @@
+import { TransactionReceipt } from 'web3-core'
 import { LotteryContract } from '../contracts/lottery'
 
 enum LotteryActionKind {
@@ -12,6 +13,7 @@ enum LotteryActionKind {
 export interface LotteryAction {
   type: LotteryActionKind
   payload: any
+  receipt?: TransactionReceipt
 }
 export type LotteryProgressType =
   | 'init'
@@ -105,18 +107,19 @@ export const fetch = async () => {
   }
 }
 
-export const join = async (address: string, value: string) => {
-  await LotteryContract.methods.join().send({
-    from: address,
-    gas: '1000000',
-    value,
-  })
-
-  return {
-    type: LotteryActionKind.JOIN,
-    payload: { address },
-  }
-}
+export const join = async (address: string, value: string) =>
+  LotteryContract.methods
+    .join()
+    .send({
+      from: address,
+      gas: '1000000',
+      value,
+    })
+    .then((receipt: TransactionReceipt) => ({
+      type: LotteryActionKind.JOIN,
+      payload: { address },
+      receipt,
+    }))
 
 // Our reducer function that uses a switch statement to handle our actions
 const lotteryReducer = (state: ILotteryState, action: LotteryAction) => {

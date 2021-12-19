@@ -10,17 +10,27 @@ const Layout = () => {
   const topbarClasses = 'top-bar'
 
   const { inProgress: inProgressUserSetup } = useWeb3()
-  const { state: lotteryState, stateWeb3: lotteryStateWeb3 } = useLottery()
-  const [isLoading, setIsLoading] = useState(false)
+  const {
+    lottery: {
+      state: {
+        inProgress: { init },
+      },
+    },
+    web3: {
+      state: { inProgressBalance },
+    },
+  } = useLottery()
+  const [isLoading, setIsLoading] = useState(true)
 
+  console.log('Init Layout value:' + init) // eslint-disable-line
   useEffect(() => {
-    setIsLoading(
-      inProgressUserSetup ||
-        lotteryStateWeb3.inProgressBalance ||
-        lotteryState.inProgress.init,
-    )
-  }, [inProgressUserSetup, lotteryState.inProgress.init, lotteryStateWeb3])
+    console.log(
+      `Resetting load: user: ${inProgressUserSetup} balance: ${inProgressBalance} init: ${init}`,
+    ) // eslint-disable-line
+    setIsLoading(inProgressUserSetup || inProgressBalance || init)
+  }, [inProgressUserSetup, init, inProgressBalance])
 
+  console.log('Load:' + isLoading) // eslint-disable-line
   if (isLoading) {
     return (
       <Loading size={LoadingSizes.FULLSCREEN} type={LoadingTypes.GRADIENT} />
@@ -32,7 +42,7 @@ const Layout = () => {
         <Logo />
         <Menu />
       </div>
-      <ViewContainer />
+      <ViewContainer loading={isLoading} />
     </>
   )
 }
