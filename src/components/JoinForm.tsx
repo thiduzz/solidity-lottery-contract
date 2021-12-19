@@ -4,7 +4,6 @@ import { Loading, LoadingSizes, LoadingTypes } from './ui/Loading'
 import { useLottery } from '../context/LotteryContext'
 import { useApp } from '../context/AppContext'
 import useWeb3 from '../hooks/useWeb3'
-import { LotteryContract } from '../contracts/lottery'
 
 export const JoinForm = () => {
   const [ticketValue, setTicketValue] = useState<string>('')
@@ -28,7 +27,8 @@ export const JoinForm = () => {
           currentUser.address,
           client.convertFromEthToWei(ticketValue),
         )
-        await retrieveBalance(LotteryContract.options.address)
+        //TODO: perform fetch status and retrieveBalance after hook
+        //await retrieveBalance(LotteryContract.options.address)
         showSuccess('Yeah!', 'Thanks for joining! Good luck!')
       } catch (error) {
         showError(error as Error)
