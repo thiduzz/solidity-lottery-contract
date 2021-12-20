@@ -43,12 +43,10 @@ export const actions: IEnhancedActions = {
     (address: string, value: string) =>
     async (dispatch: Dispatch<LotteryAction>) => {
       try {
-        debugger // eslint-disable-line
         dispatch(setInProgress('join', false))
         dispatch(setError(null))
         return await join(address, value)
           .then((actionResult: LotteryAction) => {
-            debugger // eslint-disable-line
             dispatch(actionResult)
             dispatch(setInProgress('join', false))
             return actionResult.receipt
@@ -77,13 +75,21 @@ export const actions: IEnhancedActions = {
   pickWinner:
     (address: string) => async (dispatch: Dispatch<LotteryAction>) => {
       try {
-        dispatch(await pickWinner(address))
-        dispatch(setInProgress('pickWinner', false))
-        dispatch(setError(null))
+        debugger // eslint-disable-line
+
+        return await pickWinner(address)
+          .then((actionResult: LotteryAction) => {
+            dispatch(actionResult)
+            dispatch(setInProgress('pickWinner', false))
+            dispatch(setError(null))
+            return actionResult.payload.winner
+          })
+          .catch((e) => {
+            throw e
+          })
       } catch (e) {
         dispatch(setError(e as Error))
-      } finally {
-        dispatch(setInProgress('pickWinner', false))
+        throw e
       }
     },
 }

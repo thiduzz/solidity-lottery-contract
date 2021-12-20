@@ -25,7 +25,6 @@ export const JoinForm = () => {
       e.preventDefault()
       try {
         setInProgress(true)
-        debugger // eslint-disable-line
         const receipt = (await lotteryActions.join(
           user.address,
           client.convertFromEthToWei(ticketValue),

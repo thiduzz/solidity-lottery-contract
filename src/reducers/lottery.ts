@@ -86,6 +86,9 @@ export const pickWinner = async (address: string) => {
     from: address,
     gas: '1000000',
   })
+  debugger // eslint-disable-line
+  console.log(winner) // eslint-disable-line
+
   return {
     type: LotteryActionKind.PICK_WINNER,
     payload: { winner },
